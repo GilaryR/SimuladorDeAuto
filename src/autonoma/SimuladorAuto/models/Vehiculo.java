@@ -4,6 +4,8 @@ package autonoma.SimuladorAuto.models;
 import autonoma.SimuladorAuto.exception.AccidenteException;
 import autonoma.SimuladorAuto.exception.FrenadoBruscoException;
 import autonoma.SimuladorAuto.exception.VehiculoApagadoException;
+import autonoma.SimuladorAuto.exception.VehiculoEncendidoException;
+import autonoma.SimuladorAuto.exception.VelocidadExcedidaException;
 
 
 
@@ -18,10 +20,10 @@ public class Vehiculo {
     private double velocidad;
     
     /** Motor del vehículo. */
-    private Motor motor;
+    private final Motor motor;
     
     /** Llantas del vehículo. */
-    private Llanta llantas;
+    private final Llanta llantas;
     
     /** Indica si el vehículo está encendido. */
     private boolean encendido;

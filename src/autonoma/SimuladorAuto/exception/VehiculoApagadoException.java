@@ -1,20 +1,24 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
 package autonoma.SimuladorAuto.exception;
 
 /**
+ * 
+ * Excepción personalizada que se lanza cuando se intenta realizar una operación
+ * inválida sobre un vehículo que está apagado.
  *
- * @author valej
+ * @author Luisa Fernanda Henao Posada
+ * @since 20250404
+ * @version 1.0.0
  */
-public class VehiculoApagadoException {
+
+public class VehiculoApagadoException extends Exception {
 
     /**
-     * @param args the command line arguments
+     * Crea una nueva instancia de {@code VehiculoApagadoException}
+     * con un mensaje descriptivo del error.
+     *
+     * @param mensaje El mensaje que describe la causa de la excepción.
      */
-    public static void main(String[] args) {
-        // TODO code application logic here
+    public VehiculoApagadoException(String mensaje) {
+        super(mensaje);
     }
-    
 }

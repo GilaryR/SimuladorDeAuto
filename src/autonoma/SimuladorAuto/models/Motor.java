@@ -1,6 +1,6 @@
 package autonoma.SimuladorAuto.models;
 
-import autonoma.SimuladorAuto.Exception.VelocidadExcedidaException;
+import autonoma.SimuladorAuto.exception.VelocidadExcedidaException;
 
 /**
  *
@@ -15,7 +15,7 @@ public class Motor {
     private boolean encendido;  
 
     /** Velocidad máxima permitida para el motor. */
-    private double velocidadMaxima;  
+    private final double velocidadMaxima;  
 
     /**
      * Constructor de la clase Motor.
@@ -47,7 +47,7 @@ public class Motor {
      * Valida si una velocidad dada supera la velocidad máxima del motor.
      * 
      * @param velocidad Velocidad a validar.
-     * @throws LimiteMotorException Si la velocidad supera el límite permitido.
+     * @throws autonoma.SimuladorAuto.exception.VelocidadExcedidaException
      */
     public void validarVelocidadMaxima(double velocidad) throws VelocidadExcedidaException {
         if (velocidad > this.velocidadMaxima) {
