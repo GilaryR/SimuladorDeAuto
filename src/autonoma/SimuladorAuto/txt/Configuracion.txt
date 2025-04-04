@@ -1,0 +1,2 @@
+llantas;Buenas
+motor;1000
