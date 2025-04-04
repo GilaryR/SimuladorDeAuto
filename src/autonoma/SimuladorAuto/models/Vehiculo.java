@@ -1,14 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package autonoma.SimuladorAuto.models;
 
-import autonoma.SimuladorDeAuto.Exception.AccidenteException;
-import autonoma.SimuladorDeAuto.Exception.FrenadoBruscoException;
-import autonoma.SimuladorDeAuto.Exception.VehiculoApagadoException;
-import autonoma.SimuladorDeAuto.Exception.VehiculoEncendidoException;
-import autonoma.SimuladorDeAuto.Exception.VelocidadExcedidaException;
+import autonoma.SimuladorAuto.exception.AccidenteException;
+import autonoma.SimuladorAuto.exception.FrenadoBruscoException;
+import autonoma.SimuladorAuto.exception.VehiculoApagadoException;
+
+
 
 /**
  * Clase Vehiculo que modela el comportamiento de un automóvil en una simulación.
