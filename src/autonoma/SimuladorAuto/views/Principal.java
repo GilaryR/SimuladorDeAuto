@@ -392,33 +392,44 @@ try {
     }//GEN-LAST:event_AceleradorMouseClicked
 
     private void FrenoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FrenoMouseClicked
-        
-        try {
-            if (this.simulador.getVehiculo().isEncendido()!=false){
-                // Solicitar la velocidad al usuario
-                String input = JOptionPane.showInputDialog(this, "Por favor, ingrese la velocidad de frenado:", "Entrada de Velocidad", JOptionPane.QUESTION_MESSAGE);
-        
-    
-                // Convertir el valor ingresado a un número entero
-                int velocidad = Integer.parseInt(input);
-    
-                // Llamar al método frenarBruscamenteVehiculo con la velocidad ingresada
-                simulador.frenarVehiculo(velocidad);
-                Velocidad.setText(simulador.getVelocidadVehiculo() + " km/h");
-                Estado.setText("Encendido");
-                Estado.setForeground(Color.GREEN);
-                Cilindraje.setText(simulador.getVehiculo().getLlantas().getLimitePatinaje() + " km/h");
-                Cilindraje1.setText(simulador.getVehiculo().getMotor().getVelocidadMaxima() + " km/h");
-                Freno freno = new Freno(this, true);
-                freno.setVisible(true);
+try {
+    if (this.simulador.getVehiculo().isEncendido()) {
+        // Solicitar la velocidad al usuario
+        String input = JOptionPane.showInputDialog(this, "Por favor, ingrese la velocidad de frenado:", "Entrada de Velocidad", JOptionPane.QUESTION_MESSAGE);
 
-                }
-        }catch (NumberFormatException e) {
-            // Manejar el error si la entrada no es un número válido
-            JOptionPane.showMessageDialog(this, "Por favor, ingrese un valor numérico válido.", "Error de entrada", JOptionPane.ERROR_MESSAGE);
-        }catch (VehiculoApagadoException e) {
-            JOptionPane.showMessageDialog(this,  e.getMessage() ,"Error", JOptionPane.ERROR_MESSAGE);
+        // Validar que se ingresó algo
+        if (input == null || input.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No se ingresó velocidad.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
         }
+
+        // Convertir el valor ingresado a número
+        int velocidad = Integer.parseInt(input);
+
+        // Llamar al método frenar
+        simulador.frenarVehiculo(velocidad);
+
+        // Actualizar interfaz
+        Velocidad.setText(simulador.getVelocidadVehiculo() + " km/h");
+        Estado.setText("Encendido");
+        Estado.setForeground(Color.GREEN);
+        Cilindraje.setText(simulador.getVehiculo().getLlantas().getLimitePatinaje() + " km/h");
+        Cilindraje1.setText(simulador.getVehiculo().getMotor().getVelocidadMaxima() + " km/h");
+
+        // Mostrar JDialog de frenado normal
+        Freno freno = new Freno(this, true);
+        freno.setVisible(true);
+    } else {
+        // Este else es opcional si prefieres validar aquí en vez de lanzar excepción
+        throw new VehiculoApagadoException("El vehículo está apagado. El carro está quieto y no necesita frenar.");
+    }
+
+} catch (NumberFormatException e) {
+    JOptionPane.showMessageDialog(this, "Por favor, ingrese un valor numérico válido.", "Error de entrada", JOptionPane.ERROR_MESSAGE);
+} catch (VehiculoApagadoException e) {
+    JOptionPane.showMessageDialog(this, e.getMessage(), "Vehículo Apagado", JOptionPane.WARNING_MESSAGE);
+}
+
     }//GEN-LAST:event_FrenoMouseClicked
 
     private void FrenoBruscoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FrenoBruscoMouseClicked
