@@ -332,22 +332,25 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_ApagarMouseClicked
 
     private void AceleradorMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_AceleradorMouseClicked
-    try {
+try {
     if (this.simulador.getVehiculo().isEncendido()) {
-        // Solicitar la velocidad al usuario
+        // Solicitar la velocidad al conductor
         String input = JOptionPane.showInputDialog(this, "Por favor, ingrese la velocidad del vehículo:", "Entrada de Velocidad", JOptionPane.QUESTION_MESSAGE);
-
-        // Convertir el valor ingresado a un número entero
+  
+        if (input == null || input.isBlank()) return;
+        
         int velocidad = Integer.parseInt(input);
 
-        // Verificar si la velocidad supera el límite del motor
+        // Verificar si excede la velocidad máxima
         int velocidadMaxima = (int) simulador.getVehiculo().getMotor().getVelocidadMaxima();
         if (velocidad > velocidadMaxima) {
             throw new AccidenteException("¡Se sobrepasó la velocidad máxima del motor! El vehículo se ha accidentado.");
         }
 
-        // Acelerar el vehículo
+        //  Acelerar y mostrar el gif de aceleración
         simulador.acelerarVehiculo(velocidad);
+        AcelerarCarro gif = new AcelerarCarro(this, true);
+        gif.setVisible(true);
 
         // Actualizar la interfaz
         Velocidad.setText(simulador.getVelocidadVehiculo() + " km/h");
@@ -359,9 +362,8 @@ public class Principal extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, "Vehículo acelerado. Velocidad actual: " + simulador.getVelocidadVehiculo() + " Km/h.", "Velocidad actual", JOptionPane.INFORMATION_MESSAGE);
 
     } else {
+        // Si está apagado, verificar si la velocidad actual es riesgosa
         int velocidadActual = (int) simulador.getVelocidadVehiculo();
-
-        // Verificar si el vehículo fue apagado a una velocidad peligrosa
         if (velocidadActual >= 60) {
             throw new AccidenteException("¡Se apagó el vehículo a alta velocidad! El conductor ha tenido un accidente.");
         }
@@ -369,15 +371,20 @@ public class Principal extends javax.swing.JFrame {
         simulador.acelerarVehiculo(0); 
     }
 
-    } catch (VelocidadExcedidaException e) {
+        } catch (VelocidadExcedidaException e) {
     JOptionPane.showMessageDialog(this, e.getMessage(),
         "Advertencia: Velocidad excedida", JOptionPane.WARNING_MESSAGE);
 
-    } catch (VehiculoApagadoException ex) {
+        } catch (VehiculoApagadoException ex) {
     JOptionPane.showMessageDialog(this, ex.getMessage(),
         "Error: Vehículo apagado", JOptionPane.ERROR_MESSAGE);
 
-    } catch (AccidenteException ae) {
+        } catch (AccidenteException ae) {
+    // Mostrar gif del accidente
+    AccidenteCarro gifAccidente = new AccidenteCarro(this, true);
+    gifAccidente.setVisible(true);
+
+    // Luego mostrar el mensaje de error
     JOptionPane.showMessageDialog(this, ae.getMessage(),
         "¡Accidente!", JOptionPane.ERROR_MESSAGE);
 }
