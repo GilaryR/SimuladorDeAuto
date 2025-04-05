@@ -11,8 +11,6 @@ import autonoma.SimuladorAuto.models.Simulador;
 import autonoma.SimuladorAuto.models.Vehiculo;
 import java.awt.Color;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -25,6 +23,7 @@ public class Principal extends javax.swing.JFrame {
 
     /**
      * Creates new form Principal
+     * @param simulador
      */
     public Principal(Simulador simulador) {
         initComponents();
@@ -273,14 +272,16 @@ public class Principal extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(16, 16, 16)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1096, Short.MAX_VALUE)
-                .addGap(0, 0, 0))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -311,57 +312,75 @@ public class Principal extends javax.swing.JFrame {
 
     private void ApagarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ApagarMouseClicked
     try {
-        simulador.apagarVehiculo(); // Método para apagar el vehículo
+         simulador.apagarVehiculo();
+
         Estado.setText("Apagado");
         Estado.setForeground(Color.RED);
-        Velocidad.setText(String.valueOf(simulador.getVelocidadVehiculo()) + " km/h");
-        Cilindraje.setText(String.valueOf(simulador.getVehiculo().getLlantas().getLimitePatinaje()) + " km/h");
-        Cilindraje1.setText(String.valueOf(simulador.getVehiculo().getMotor().getVelocidadMaxima()) + " km/h");
+        Velocidad.setText("0 km/h");
 
-        // ABRIR EL JDialog CarroApagado
-        CarroApagado dialogo = new CarroApagado(this, true);
-        dialogo.setVisible(true);
-
-        JOptionPane.showMessageDialog(this, "Vehículo apagado.", "Información", JOptionPane.INFORMATION_MESSAGE);
-    } catch (VehiculoApagadoException e) {
-        JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    }   catch (AccidenteException ex) {
-            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
+    } catch (AccidenteException ex) {
+        JOptionPane.showMessageDialog(this,
+            ex.getMessage(),
+            "¡Accidente!",
+            JOptionPane.ERROR_MESSAGE);
+    } catch (VehiculoApagadoException ex) {
+        JOptionPane.showMessageDialog(this,
+            ex.getMessage(),
+            "Error: Vehículo apagado",
+            JOptionPane.WARNING_MESSAGE);
+    }
     }//GEN-LAST:event_ApagarMouseClicked
 
     private void AceleradorMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_AceleradorMouseClicked
-       try {
-            if (this.simulador.getVehiculo().isEncendido()!=false){
-                // Solicitar la velocidad al usuario
-                String input = JOptionPane.showInputDialog(this, "Por favor, ingrese la velocidad del vehículo:", "Entrada de Velocidad", JOptionPane.QUESTION_MESSAGE);
-        
-    
-                // Convertir el valor ingresado a un número entero
-                int velocidad = Integer.parseInt(input);
-    
-                // Llamar al método frenarBruscamenteVehiculo con la velocidad ingresada
-                simulador.acelerarVehiculo(velocidad);
-                Velocidad.setText(simulador.getVelocidadVehiculo() + " km/h");
-                Estado.setText("Encendido");
-                Estado.setForeground(Color.GREEN);
-                Cilindraje.setText(simulador.getVehiculo().getLlantas().getLimitePatinaje() + " km/h");
-                Cilindraje1.setText(simulador.getVehiculo().getMotor().getVelocidadMaxima() + " km/h");
-                
-                JOptionPane.showMessageDialog(this, "Vehículo acelerado. Velocidad actual: " + this.simulador.getVelocidadVehiculo() + " Km/h.", "Error", JOptionPane.ERROR_MESSAGE);
-                }else{
-                simulador.acelerarVehiculo(0); 
-                }
+    try {
+    if (this.simulador.getVehiculo().isEncendido()) {
+        // Solicitar la velocidad al usuario
+        String input = JOptionPane.showInputDialog(this, "Por favor, ingrese la velocidad del vehículo:", "Entrada de Velocidad", JOptionPane.QUESTION_MESSAGE);
 
-        } catch (VelocidadExcedidaException e) {
-         JOptionPane.showMessageDialog(this, e.getMessage(),
-            "Advertencia: Velocidad excedida", JOptionPane.WARNING_MESSAGE);
+        // Convertir el valor ingresado a un número entero
+        int velocidad = Integer.parseInt(input);
 
-        } catch (VehiculoApagadoException ex) {
-        JOptionPane.showMessageDialog(this, ex.getMessage(),
-            "Error: Vehículo apagado", JOptionPane.ERROR_MESSAGE);
+        // Verificar si la velocidad supera el límite del motor
+        int velocidadMaxima = (int) simulador.getVehiculo().getMotor().getVelocidadMaxima();
+        if (velocidad > velocidadMaxima) {
+            throw new AccidenteException("¡Se sobrepasó la velocidad máxima del motor! El vehículo se ha accidentado.");
         }
+
+        // Acelerar el vehículo
+        simulador.acelerarVehiculo(velocidad);
+
+        // Actualizar la interfaz
+        Velocidad.setText(simulador.getVelocidadVehiculo() + " km/h");
+        Estado.setText("Encendido");
+        Estado.setForeground(Color.GREEN);
+        Cilindraje.setText(simulador.getVehiculo().getLlantas().getLimitePatinaje() + " km/h");
+        Cilindraje1.setText(velocidadMaxima + " km/h");
+
+        JOptionPane.showMessageDialog(this, "Vehículo acelerado. Velocidad actual: " + simulador.getVelocidadVehiculo() + " Km/h.", "Velocidad actual", JOptionPane.INFORMATION_MESSAGE);
+
+    } else {
+        int velocidadActual = (int) simulador.getVelocidadVehiculo();
+
+        // Verificar si el vehículo fue apagado a una velocidad peligrosa
+        if (velocidadActual >= 60) {
+            throw new AccidenteException("¡Se apagó el vehículo a alta velocidad! El conductor ha tenido un accidente.");
+        }
+
+        simulador.acelerarVehiculo(0); 
+    }
+
+    } catch (VelocidadExcedidaException e) {
+    JOptionPane.showMessageDialog(this, e.getMessage(),
+        "Advertencia: Velocidad excedida", JOptionPane.WARNING_MESSAGE);
+
+    } catch (VehiculoApagadoException ex) {
+    JOptionPane.showMessageDialog(this, ex.getMessage(),
+        "Error: Vehículo apagado", JOptionPane.ERROR_MESSAGE);
+
+    } catch (AccidenteException ae) {
+    JOptionPane.showMessageDialog(this, ae.getMessage(),
+        "¡Accidente!", JOptionPane.ERROR_MESSAGE);
+}
 
     }//GEN-LAST:event_AceleradorMouseClicked
 

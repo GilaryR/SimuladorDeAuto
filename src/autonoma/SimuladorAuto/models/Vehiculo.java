@@ -116,6 +116,10 @@ public class Vehiculo {
         this.motor.apagar();
         this.encendido = false;
         System.out.println("Vehículo apagado.");
+       
+        {
+}
+
     }
 
     /**
