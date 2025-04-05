@@ -4,10 +4,13 @@ package autonoma.SimuladorAuto.views;
 import autonoma.SimuladorAuto.exception.AccidenteException;
 import autonoma.SimuladorAuto.exception.VehiculoApagadoException;
 import autonoma.SimuladorAuto.exception.VehiculoEncendidoException;
+import autonoma.SimuladorAuto.exception.VelocidadExcedidaException;
 import autonoma.SimuladorAuto.models.ConfiguracionDelVehiculo;
 import autonoma.SimuladorAuto.models.Simulador;
 import autonoma.SimuladorAuto.models.Vehiculo;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -63,6 +66,11 @@ public class Principal extends javax.swing.JFrame {
         Freno.setIcon(new javax.swing.ImageIcon(getClass().getResource("/autonoma/SimuladorAuto/images/Freno.png"))); // NOI18N
 
         Acelerador.setIcon(new javax.swing.ImageIcon(getClass().getResource("/autonoma/SimuladorAuto/images/Acelerador.png"))); // NOI18N
+        Acelerador.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                AceleradorMouseClicked(evt);
+            }
+        });
 
         FrenoBrusco.setIcon(new javax.swing.ImageIcon(getClass().getResource("/autonoma/SimuladorAuto/images/f.png"))); // NOI18N
 
@@ -84,6 +92,11 @@ public class Principal extends javax.swing.JFrame {
         });
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/autonoma/SimuladorAuto/images/BotonApagr.png"))); // NOI18N
+        jLabel3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jLabel3MouseClicked(evt);
+            }
+        });
 
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/autonoma/SimuladorAuto/images/BotonEncender.png"))); // NOI18N
         jLabel4.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -188,6 +201,46 @@ public class Principal extends javax.swing.JFrame {
      JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
     }//GEN-LAST:event_jLabel4MouseClicked
+
+    private void jLabel3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel3MouseClicked
+    try {
+        simulador.apagarVehiculo(); // Método para apagar el vehículo
+
+        // ABRIR EL JDialog CarroApagado
+        CarroApagado dialogo = new CarroApagado(this, true);
+        dialogo.setVisible(true);
+
+        JOptionPane.showMessageDialog(this, "Vehículo apagado.", "Información", JOptionPane.INFORMATION_MESSAGE);
+    } catch (VehiculoApagadoException e) {
+        JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }   catch (AccidenteException ex) {
+            Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }//GEN-LAST:event_jLabel3MouseClicked
+
+    private void AceleradorMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_AceleradorMouseClicked
+    try {
+    double velocidad = 30.0; 
+    simulador.acelerarVehiculo(velocidad);
+
+    // Mostrar ventana AcelerarCarro
+    AcelerarCarro dialogo = new AcelerarCarro(this, true);
+    dialogo.setVisible(true);
+
+    JOptionPane.showMessageDialog(this, "Vehículo acelerado a " + velocidad + " km/h correctamente.",
+            "Información", JOptionPane.INFORMATION_MESSAGE);
+
+} catch (VelocidadExcedidaException e) {
+    JOptionPane.showMessageDialog(this, e.getMessage(),
+            "Advertencia: Velocidad excedida", JOptionPane.WARNING_MESSAGE);
+
+} catch (VehiculoApagadoException ex) {
+    JOptionPane.showMessageDialog(this, ex.getMessage(),
+            "Error: Vehículo apagado", JOptionPane.ERROR_MESSAGE);
+}
+
+    }//GEN-LAST:event_AceleradorMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
