@@ -2,6 +2,7 @@
 package autonoma.SimuladorAuto.views;
 
 import autonoma.SimuladorAuto.exception.AccidenteException;
+import autonoma.SimuladorAuto.exception.FrenadoBruscoException;
 import autonoma.SimuladorAuto.exception.VehiculoApagadoException;
 import autonoma.SimuladorAuto.exception.VehiculoEncendidoException;
 import autonoma.SimuladorAuto.exception.VelocidadExcedidaException;
@@ -64,6 +65,11 @@ public class Principal extends javax.swing.JFrame {
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/autonoma/SimuladorAuto/images/Carro.jpg"))); // NOI18N
 
         Freno.setIcon(new javax.swing.ImageIcon(getClass().getResource("/autonoma/SimuladorAuto/images/Freno.png"))); // NOI18N
+        Freno.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                FrenoMouseClicked(evt);
+            }
+        });
 
         Acelerador.setIcon(new javax.swing.ImageIcon(getClass().getResource("/autonoma/SimuladorAuto/images/Acelerador.png"))); // NOI18N
         Acelerador.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -73,6 +79,11 @@ public class Principal extends javax.swing.JFrame {
         });
 
         FrenoBrusco.setIcon(new javax.swing.ImageIcon(getClass().getResource("/autonoma/SimuladorAuto/images/f.png"))); // NOI18N
+        FrenoBrusco.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                FrenoBruscoMouseClicked(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
         jLabel1.setText("Acelerador");
@@ -220,16 +231,24 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel3MouseClicked
 
     private void AceleradorMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_AceleradorMouseClicked
-    try {
-    double velocidad = 30.0; 
-    simulador.acelerarVehiculo(velocidad);
-
-    // Mostrar ventana AcelerarCarro
-    AcelerarCarro dialogo = new AcelerarCarro(this, true);
-    dialogo.setVisible(true);
-
-    JOptionPane.showMessageDialog(this, "Vehículo acelerado a " + velocidad + " km/h correctamente.",
-            "Información", JOptionPane.INFORMATION_MESSAGE);
+       try {
+            if (this.simulador.getVehiculo().isEncendido()!=false){
+                // Solicitar la velocidad al usuario
+                String input = JOptionPane.showInputDialog(this, "Por favor, ingrese la velocidad del vehículo:", "Entrada de Velocidad", JOptionPane.QUESTION_MESSAGE);
+        
+    
+                // Convertir el valor ingresado a un número entero
+                int velocidad = Integer.parseInt(input);
+    
+                // Llamar al método frenarBruscamenteVehiculo con la velocidad ingresada
+                simulador.acelerarVehiculo(velocidad);
+                
+     
+                
+                JOptionPane.showMessageDialog(this, "Vehículo acelerado. Velocidad actual: " + this.simulador.getVelocidadVehiculo() + " Km/h.", "Error", JOptionPane.ERROR_MESSAGE);
+                }else{
+                simulador.acelerarVehiculo(0); 
+                }
 
 } catch (VelocidadExcedidaException e) {
     JOptionPane.showMessageDialog(this, e.getMessage(),
@@ -241,6 +260,45 @@ public class Principal extends javax.swing.JFrame {
 }
 
     }//GEN-LAST:event_AceleradorMouseClicked
+
+    private void FrenoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FrenoMouseClicked
+        
+        try {
+            if (this.simulador.getVehiculo().isEncendido()!=false){
+                // Solicitar la velocidad al usuario
+                String input = JOptionPane.showInputDialog(this, "Por favor, ingrese la velocidad de frenado:", "Entrada de Velocidad", JOptionPane.QUESTION_MESSAGE);
+        
+    
+                // Convertir el valor ingresado a un número entero
+                int velocidad = Integer.parseInt(input);
+    
+                // Llamar al método frenarBruscamenteVehiculo con la velocidad ingresada
+                simulador.frenarVehiculo(velocidad);
+                
+
+                }
+        }catch (NumberFormatException e) {
+            // Manejar el error si la entrada no es un número válido
+            JOptionPane.showMessageDialog(this, "Por favor, ingrese un valor numérico válido.", "Error de entrada", JOptionPane.ERROR_MESSAGE);
+        } catch (VehiculoApagadoException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_FrenoMouseClicked
+
+    private void FrenoBruscoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FrenoBruscoMouseClicked
+     try {
+        simulador.frenarBruscamenteVehiculo();
+         
+        JOptionPane.showMessageDialog(this, "Vehículo acelerado. Velocidad actual: " + this.simulador.getVelocidadVehiculo() + " Km/h.", "Error", JOptionPane.ERROR_MESSAGE);
+        }catch (NumberFormatException e) {
+            // Manejar el error si la entrada no es un número válido
+            JOptionPane.showMessageDialog(this, "Por favor, ingrese un valor numérico válido.", "Error de entrada", JOptionPane.ERROR_MESSAGE);
+        }catch (VehiculoApagadoException e) {
+            JOptionPane.showMessageDialog(this,  e.getMessage() ,"Error", JOptionPane.ERROR_MESSAGE);
+        } catch (FrenadoBruscoException e) {
+            JOptionPane.showMessageDialog(this,  e.getMessage() ,"Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_FrenoBruscoMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

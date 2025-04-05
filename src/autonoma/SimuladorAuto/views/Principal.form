@@ -137,6 +137,9 @@
               <Image iconType="3" name="/autonoma/SimuladorAuto/images/Freno.png"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="FrenoMouseClicked"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="Acelerador">
           <Properties>
@@ -154,6 +157,9 @@
               <Image iconType="3" name="/autonoma/SimuladorAuto/images/f.png"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="FrenoBruscoMouseClicked"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel1">
           <Properties>
