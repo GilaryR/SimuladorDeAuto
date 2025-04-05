@@ -233,9 +233,7 @@ public class Principal extends javax.swing.JFrame {
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(Acelerador, javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(0, 0, 0)
-                                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap())))
         );
         jPanel1Layout.setVerticalGroup(
@@ -255,7 +253,7 @@ public class Principal extends javax.swing.JFrame {
                                 .addComponent(Freno))
                             .addComponent(FrenoBrusco, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel7)
                             .addComponent(jLabel8)))
                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -385,35 +383,52 @@ public class Principal extends javax.swing.JFrame {
                 Estado.setForeground(Color.GREEN);
                 Cilindraje.setText(simulador.getVehiculo().getLlantas().getLimitePatinaje() + " km/h");
                 Cilindraje1.setText(simulador.getVehiculo().getMotor().getVelocidadMaxima() + " km/h");
-                
+                Freno freno = new Freno(this, true);
+                freno.setVisible(true);
 
                 }
         }catch (NumberFormatException e) {
             // Manejar el error si la entrada no es un número válido
             JOptionPane.showMessageDialog(this, "Por favor, ingrese un valor numérico válido.", "Error de entrada", JOptionPane.ERROR_MESSAGE);
-        } catch (VehiculoApagadoException e) {
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }catch (VehiculoApagadoException e) {
+            JOptionPane.showMessageDialog(this,  e.getMessage() ,"Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_FrenoMouseClicked
 
     private void FrenoBruscoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FrenoBruscoMouseClicked
-     try {
-        simulador.frenarBruscamenteVehiculo();
-        Velocidad.setText(simulador.getVelocidadVehiculo() + " km/h");
-        Estado.setText("Encendido");
-        Estado.setForeground(Color.GREEN);
-        Cilindraje.setText(simulador.getVehiculo().getLlantas().getLimitePatinaje() + " km/h");
-        Cilindraje1.setText(simulador.getVehiculo().getMotor().getVelocidadMaxima() + " km/h");
-         
-        JOptionPane.showMessageDialog(this, "Vehículo acelerado. Velocidad actual: " + this.simulador.getVelocidadVehiculo() + " Km/h.", "Error", JOptionPane.ERROR_MESSAGE);
-        }catch (NumberFormatException e) {
-            // Manejar el error si la entrada no es un número válido
-            JOptionPane.showMessageDialog(this, "Por favor, ingrese un valor numérico válido.", "Error de entrada", JOptionPane.ERROR_MESSAGE);
-        }catch (VehiculoApagadoException e) {
-            JOptionPane.showMessageDialog(this,  e.getMessage() ,"Error", JOptionPane.ERROR_MESSAGE);
-        } catch (FrenadoBruscoException e) {
-            JOptionPane.showMessageDialog(this,  e.getMessage() ,"Error", JOptionPane.ERROR_MESSAGE);
-        }
+try {
+    // Guardar velocidad antes de frenar
+    int velocidadAntes = (int) simulador.getVelocidadVehiculo();
+
+    // Frenar el vehículo
+    simulador.frenarBruscamenteVehiculo();
+
+    // Actualizar interfaz
+    Velocidad.setText(simulador.getVelocidadVehiculo() + " km/h");
+    Estado.setText("Encendido");
+    Estado.setForeground(Color.GREEN);
+    Cilindraje.setText(simulador.getVehiculo().getLlantas().getLimitePatinaje() + " km/h");
+    Cilindraje1.setText(simulador.getVehiculo().getMotor().getVelocidadMaxima() + " km/h");
+
+    // Verificar si había velocidad antes de frenar
+    if (velocidadAntes > 0) {
+        FrenadoBrusco freno = new FrenadoBrusco(this, true);
+        freno.setVisible(true);
+
+        JOptionPane.showMessageDialog(this, "¡El vehículo frenó bruscamente y patinó!", "Aviso de Patinaje", JOptionPane.WARNING_MESSAGE);
+    } else {
+        JOptionPane.showMessageDialog(this, "El vehículo ya estaba detenido. Solo se ha aplicado el frenado normal.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+} catch (NumberFormatException e) {
+    JOptionPane.showMessageDialog(this, "Por favor, ingrese un valor numérico válido.", "Error de entrada", JOptionPane.ERROR_MESSAGE);
+} catch (VehiculoApagadoException e) {
+    JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+} catch (FrenadoBruscoException e) {
+    JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+}
+
+     
     }//GEN-LAST:event_FrenoBruscoMouseClicked
 
 
