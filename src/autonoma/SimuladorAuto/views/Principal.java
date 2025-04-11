@@ -7,9 +7,11 @@ import autonoma.SimuladorAuto.exception.VehiculoApagadoException;
 import autonoma.SimuladorAuto.exception.VehiculoEncendidoException;
 import autonoma.SimuladorAuto.exception.VelocidadExcedidaException;
 import autonoma.SimuladorAuto.models.ConfiguracionDelVehiculo;
+import autonoma.SimuladorAuto.models.Lector;
+import autonoma.SimuladorAuto.models.LectorArchivoTextoPlano;
 import autonoma.SimuladorAuto.models.Simulador;
 import autonoma.SimuladorAuto.models.Vehiculo;
-import autonoma.SimuladorAuto.persistencia.LecturaEscrituraConfiguracion;
+
 import java.awt.Color;
 import java.io.IOException;
 import javax.swing.JOptionPane;
@@ -29,8 +31,9 @@ public class Principal extends javax.swing.JFrame {
     public Principal(Simulador simulador) {
     initComponents();
         this.setLocationRelativeTo(null);
+        LectorArchivoTextoPlano lector = new LectorArchivoTextoPlano();
         try {
-             Vehiculo vehiculo = LecturaEscrituraConfiguracion.leerConfiguracion("src/autonoma/SimuladorAuto/txt/Configuracion.txt");
+           Vehiculo vehiculo = lector.leerConfiguracion("src/autonoma/SimuladorAuto/txt/Configuracion.txt");
             this.simulador = new Simulador(vehiculo);
 
         } catch (IOException | IllegalArgumentException ex) {
@@ -67,7 +70,6 @@ public class Principal extends javax.swing.JFrame {
         Velocidad = new javax.swing.JLabel();
         Cilindraje = new javax.swing.JLabel();
         Cilindraje1 = new javax.swing.JLabel();
-        ConfigurarAuto = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -196,15 +198,6 @@ public class Principal extends javax.swing.JFrame {
                 .addGap(0, 6, Short.MAX_VALUE))
         );
 
-        ConfigurarAuto.setBackground(new java.awt.Color(225, 227, 229));
-        ConfigurarAuto.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
-        ConfigurarAuto.setText("CONFIGURAR AUTO");
-        ConfigurarAuto.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ConfigurarAutoActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -240,13 +233,12 @@ public class Principal extends javax.swing.JFrame {
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(Acelerador, javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)))
-                            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(ConfigurarAuto)
-                                .addGap(44, 44, 44)
-                                .addComponent(btnCerrar)))
-                        .addContainerGap())))
+                            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addGap(139, 139, 139)
+                        .addComponent(btnCerrar)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -275,9 +267,7 @@ public class Principal extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnCerrar)
-                    .addComponent(ConfigurarAuto))
+                .addComponent(btnCerrar)
                 .addContainerGap(12, Short.MAX_VALUE))
             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
@@ -327,17 +317,27 @@ public class Principal extends javax.swing.JFrame {
 
     private void ApagarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ApagarMouseClicked
     try {
-         simulador.apagarVehiculo();
+        simulador.apagarVehiculo();
 
         Estado.setText("Apagado");
         Estado.setForeground(Color.RED);
         Velocidad.setText("0 km/h");
 
     } catch (AccidenteException ex) {
+        // Mostrar el gif del accidente antes del mensaje
+        AccidenteCarro gifAccidente = new AccidenteCarro(this, true);
+        gifAccidente.setVisible(true);
+
         JOptionPane.showMessageDialog(this,
             ex.getMessage(),
             "¡Accidente!",
             JOptionPane.ERROR_MESSAGE);
+
+        // También apagamos visualmente el auto
+        Estado.setText("Apagado");
+        Estado.setForeground(Color.RED);
+        Velocidad.setText("0 km/h");
+
     } catch (VehiculoApagadoException ex) {
         JOptionPane.showMessageDialog(this,
             ex.getMessage(),
@@ -347,63 +347,83 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_ApagarMouseClicked
 
     private void AceleradorMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_AceleradorMouseClicked
-try {
-    if (this.simulador.getVehiculo().isEncendido()) {
-        // Solicitar la velocidad al conductor
-        String input = JOptionPane.showInputDialog(this, "Por favor, ingrese la velocidad del vehículo:", "Entrada de Velocidad", JOptionPane.QUESTION_MESSAGE);
-  
-        if (input == null || input.isBlank()) return;
-        
-        int velocidad = Integer.parseInt(input);
+    try {
+        if (this.simulador.getVehiculo().isEncendido()) {
+            // Solicitar velocidad al usuario
+            String input = JOptionPane.showInputDialog(this, 
+                "Por favor, ingrese la velocidad del vehículo:", 
+                "Entrada de Velocidad", 
+                JOptionPane.QUESTION_MESSAGE);
 
-        // Verificar si excede la velocidad máxima
-        int velocidadMaxima = (int) simulador.getVehiculo().getMotor().getVelocidadMaxima();
-        if (velocidad > velocidadMaxima) {
-            throw new AccidenteException("¡Se sobrepasó la velocidad máxima del motor! El vehículo se ha accidentado.");
+            if (input == null || input.isBlank()) return;
+
+            int velocidad = Integer.parseInt(input.trim());
+
+            // Obtener velocidad máxima
+            int velocidadMaxima = (int) simulador.getVehiculo().getMotor().getVelocidadMaxima();
+
+            if (velocidad > velocidadMaxima) {
+                throw new AccidenteException("¡Se sobrepasó la velocidad máxima del motor! El vehículo se ha accidentado.");
+            }
+
+            simulador.acelerarVehiculo(velocidad);
+
+            // Mostrar animación de aceleración
+            AcelerarCarro gif = new AcelerarCarro(this, true);
+            gif.setVisible(true);
+
+            // Actualizar interfaz
+            Velocidad.setText(simulador.getVelocidadVehiculo() + " km/h");
+            Estado.setText("Encendido");
+            Estado.setForeground(Color.GREEN);
+            Cilindraje.setText(simulador.getVehiculo().getLlantas().getLimitePatinaje() + " km/h");
+            Cilindraje1.setText(velocidadMaxima + " km/h");
+
+            JOptionPane.showMessageDialog(this, 
+                "Vehículo acelerado. Velocidad actual: " + simulador.getVelocidadVehiculo() + " km/h.", 
+                "Velocidad actual", 
+                JOptionPane.INFORMATION_MESSAGE);
+
+        } else {
+            int velocidadActual = (int) simulador.getVelocidadVehiculo();
+
+            if (velocidadActual >= 60) {
+                throw new AccidenteException("¡Se apagó el vehículo a alta velocidad! El conductor ha tenido un accidente.");
+            }
+
+            simulador.acelerarVehiculo(0);
         }
 
-        //  Acelerar y mostrar el gif de aceleración
-        simulador.acelerarVehiculo(velocidad);
-        AcelerarCarro gif = new AcelerarCarro(this, true);
-        gif.setVisible(true);
+    } catch (VelocidadExcedidaException e) {
+        JOptionPane.showMessageDialog(this, e.getMessage(), 
+            "Advertencia: Velocidad excedida", 
+            JOptionPane.WARNING_MESSAGE);
 
-        // Actualizar la interfaz
-        Velocidad.setText(simulador.getVelocidadVehiculo() + " km/h");
-        Estado.setText("Encendido");
-        Estado.setForeground(Color.GREEN);
-        Cilindraje.setText(simulador.getVehiculo().getLlantas().getLimitePatinaje() + " km/h");
-        Cilindraje1.setText(velocidadMaxima + " km/h");
+    } catch (VehiculoApagadoException ex) {
+        JOptionPane.showMessageDialog(this, ex.getMessage(), 
+            "Error: Vehículo apagado", 
+            JOptionPane.ERROR_MESSAGE);
 
-        JOptionPane.showMessageDialog(this, "Vehículo acelerado. Velocidad actual: " + simulador.getVelocidadVehiculo() + " Km/h.", "Velocidad actual", JOptionPane.INFORMATION_MESSAGE);
+    } catch (AccidenteException ae) {
+        // Mostrar animación del accidente
+        AccidenteCarro gifAccidente = new AccidenteCarro(this, true);
+        gifAccidente.setVisible(true);
 
-    } else {
-        // Si está apagado, verificar si la velocidad actual es riesgosa
-        int velocidadActual = (int) simulador.getVelocidadVehiculo();
-        if (velocidadActual >= 60) {
-            throw new AccidenteException("¡Se apagó el vehículo a alta velocidad! El conductor ha tenido un accidente.");
-        }
+        // Mostrar mensaje de accidente
+        JOptionPane.showMessageDialog(this, ae.getMessage(), 
+            "¡Accidente!", 
+            JOptionPane.ERROR_MESSAGE);
 
-        simulador.acelerarVehiculo(0); 
+        // Actualizar interfaz
+        Estado.setText("Apagado");
+        Estado.setForeground(Color.RED);
+        Velocidad.setText("0 km/h");
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, 
+            "Por favor, ingrese un número válido.", 
+            "Entrada inválida", 
+            JOptionPane.WARNING_MESSAGE);
     }
-
-        } catch (VelocidadExcedidaException e) {
-    JOptionPane.showMessageDialog(this, e.getMessage(),
-        "Advertencia: Velocidad excedida", JOptionPane.WARNING_MESSAGE);
-
-        } catch (VehiculoApagadoException ex) {
-    JOptionPane.showMessageDialog(this, ex.getMessage(),
-        "Error: Vehículo apagado", JOptionPane.ERROR_MESSAGE);
-
-        } catch (AccidenteException ae) {
-    // Mostrar gif del accidente
-    AccidenteCarro gifAccidente = new AccidenteCarro(this, true);
-    gifAccidente.setVisible(true);
-
-    // Luego mostrar el mensaje de error
-    JOptionPane.showMessageDialog(this, ae.getMessage(),
-        "¡Accidente!", JOptionPane.ERROR_MESSAGE);
-}
-
     }//GEN-LAST:event_AceleradorMouseClicked
 
     private void FrenoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FrenoMouseClicked
@@ -483,19 +503,11 @@ try {
      
     }//GEN-LAST:event_FrenoBruscoMouseClicked
 
-    private void ConfigurarAutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConfigurarAutoActionPerformed
-    ConfigurarVehiculo configDialog = new ConfigurarVehiculo(this, true);
-    configDialog.setVisible(true); // El usuario escribe la configuración y cierra el diálogo
- 
-    }//GEN-LAST:event_ConfigurarAutoActionPerformed
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel Acelerador;
     private javax.swing.JLabel Apagar;
     private javax.swing.JLabel Cilindraje;
     private javax.swing.JLabel Cilindraje1;
-    private javax.swing.JButton ConfigurarAuto;
     private javax.swing.JLabel Encender;
     private javax.swing.JLabel Estado;
     private javax.swing.JLabel Freno;

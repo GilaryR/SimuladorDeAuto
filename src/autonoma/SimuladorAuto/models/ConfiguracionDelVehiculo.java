@@ -1,8 +1,9 @@
 
 package autonoma.SimuladorAuto.models;
 
-import autonoma.SimuladorAuto.persistencia.LecturaEscrituraConfiguracion;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 
 /**
@@ -11,81 +12,63 @@ import java.util.Map;
  */
 
 public class ConfiguracionDelVehiculo {
-        public static Vehiculo cargarVehiculo(String rutaArchivo) throws IOException {
-        return LecturaEscrituraConfiguracion.leerConfiguracion(rutaArchivo);
-    }
+     
+    public static Vehiculo cargarVehiculo(String ruta) throws IOException {
+        Lector lector = new LectorArchivoTextoPlano();
+        ArrayList<String> lineas = lector.leer(ruta);
 
-     public static double obtenerLimitePatinaje(String tipoLlantas) {
-        double limite = 0.0;
+        String tipoLlantas = null;
+        String tipoMotor = null;
 
-        switch (tipoLlantas.toLowerCase()) {
-            case "buenas":
-                limite = 110.0;
-                break;
-            case "bonitas":
-                limite = 70.0;
-                break;
-            case "baratas":
-                limite = 50.0;
-                break;
-            default:
-                throw new IllegalArgumentException("Tipo de llantas no válido: " + tipoLlantas);
+        for (String linea : lineas) {
+            String[] partes = linea.trim().split("\\s+");
+            if (partes[0].equalsIgnoreCase("llantas")) {
+                tipoLlantas = partes[1];
+            } else if (partes[0].equalsIgnoreCase("motor")) {
+                tipoMotor = partes[1];
+            }
         }
 
-        return limite;
-    }
-
-    public static double obtenerVelocidadMaxima(String tipoMotor) {
-        double velocidad = 0.0;
-
-        switch (tipoMotor) {
-            case "1000":
-                velocidad = 100.0;
-                break;
-            case "2000":
-                velocidad = 160.0;
-                break;
-            case "3000":
-                velocidad = 220.0;
-                break;
-            default:
-                throw new IllegalArgumentException("Cilindraje de motor no válido: " + tipoMotor);
+        if (tipoLlantas == null || tipoMotor == null) {
+            throw new IllegalArgumentException("Faltan datos de configuración.");
         }
 
-        return velocidad;
+        Llanta llanta = new Llanta(tipoLlantas, obtenerLimitePatinaje(tipoLlantas));
+        Motor motor = new Motor(obtenerVelocidadMaxima(tipoMotor));
+        return new Vehiculo(motor, llanta);
     }
 
-    public static String obtenerCilindrajeDesdeVelocidad(double velocidad) {
-        String cilindraje;
+    public static int obtenerLimitePatinaje(String tipo) {
+     if (tipo == null) return 0;
 
-        if (velocidad == 100.0) {
-            cilindraje = "1000";
-        } else if (velocidad == 160.0) {
-            cilindraje = "2000";
-        } else if (velocidad == 220.0) {
-            cilindraje = "3000";
-        } else {
-            cilindraje = "Desconocido";
+     switch (tipo.toLowerCase()) {
+        case "buenas":
+            return 110;
+        case "bonitas":
+            return 70;
+        case "baratas":
+            return 50;
+        default:
+            return 0; // Valor por defecto si el tipo no es reconocido
         }
-
-        return cilindraje;
-    }
-    public static void guardarConfiguracion(String tipoLlantas, String tipoMotor, String rutaArchivo) throws Exception {
-    if (tipoLlantas == null || tipoMotor == null ||
-        tipoLlantas.isBlank() || tipoMotor.isBlank()) {
-        throw new IllegalArgumentException("Los campos no pueden estar vacíos.");
     }
 
-    double limitePatinaje = obtenerLimitePatinaje(tipoLlantas);
-    double velocidadMaxima = obtenerVelocidadMaxima(tipoMotor);
+   public static int obtenerVelocidadMaxima(String tipo) {
+    if (tipo == null) return 100;
 
-    Llanta llanta = new Llanta(tipoLlantas, limitePatinaje);
-    Motor motor = new Motor(velocidadMaxima);
-    Vehiculo vehiculo = new Vehiculo(motor, llanta);
-
-    // Llamar a persistencia
-    autonoma.SimuladorAuto.persistencia.LecturaEscrituraConfiguracion.escribirConfiguracion(rutaArchivo, vehiculo);
+    switch (tipo.toLowerCase()) {
+        case "1000":
+        case "1000cc":
+            return 100;
+        case "2000":
+        case "2000cc":
+            return 160;
+        case "3000":
+        case "3000cc":
+            return 220;
+        default:
+            return 0; // Valor por defecto si el tipo no es reconocido
     }
-   
-
 }
+}
+

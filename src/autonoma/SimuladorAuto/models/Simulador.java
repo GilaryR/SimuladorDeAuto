@@ -17,7 +17,7 @@ import autonoma.SimuladorAuto.exception.VelocidadExcedidaException;
 public class Simulador {  
 
     /** Vehículo que se va a controlar en la simulación. */
-    private final Vehiculo vehiculo;
+    private Vehiculo vehiculo;
 
     /**
      * Constructor de la clase Simulador.
@@ -95,5 +95,11 @@ public class Simulador {
     public Vehiculo getVehiculo() {
         return vehiculo;
     }
+   
+
+    public void setVehiculo(Vehiculo vehiculo) {
+        this.vehiculo = vehiculo;
+    }
+    
 
 }
