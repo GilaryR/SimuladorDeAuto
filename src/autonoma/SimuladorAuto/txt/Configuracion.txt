@@ -1,2 +1,2 @@
-llantas;Buenas
-motor;1000
+llantas Buenas
+motor 2000

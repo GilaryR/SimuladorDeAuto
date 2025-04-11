@@ -9,6 +9,7 @@ import autonoma.SimuladorAuto.exception.VelocidadExcedidaException;
 import autonoma.SimuladorAuto.models.ConfiguracionDelVehiculo;
 import autonoma.SimuladorAuto.models.Simulador;
 import autonoma.SimuladorAuto.models.Vehiculo;
+import autonoma.SimuladorAuto.persistencia.LecturaEscrituraConfiguracion;
 import java.awt.Color;
 import java.io.IOException;
 import javax.swing.JOptionPane;
@@ -26,13 +27,14 @@ public class Principal extends javax.swing.JFrame {
      * @param simulador
      */
     public Principal(Simulador simulador) {
-        initComponents();
+    initComponents();
         this.setLocationRelativeTo(null);
         try {
-        Vehiculo vehiculo = ConfiguracionDelVehiculo.cargarVehiculo("src/autonoma/SimuladorAuto/txt/Configuracion.txt");
-        this.simulador = new Simulador(vehiculo);
+             Vehiculo vehiculo = LecturaEscrituraConfiguracion.leerConfiguracion("src/autonoma/SimuladorAuto/txt/Configuracion.txt");
+            this.simulador = new Simulador(vehiculo);
+
         } catch (IOException | IllegalArgumentException ex) {
-        JOptionPane.showMessageDialog(this, "Error al cargar la configuración del vehículo: " + ex.getMessage());
+        JOptionPane.showMessageDialog(this, "Error al cargar configuración: " + ex.getMessage());
         }
     }
 
@@ -65,6 +67,7 @@ public class Principal extends javax.swing.JFrame {
         Velocidad = new javax.swing.JLabel();
         Cilindraje = new javax.swing.JLabel();
         Cilindraje1 = new javax.swing.JLabel();
+        ConfigurarAuto = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -193,6 +196,15 @@ public class Principal extends javax.swing.JFrame {
                 .addGap(0, 6, Short.MAX_VALUE))
         );
 
+        ConfigurarAuto.setBackground(new java.awt.Color(225, 227, 229));
+        ConfigurarAuto.setFont(new java.awt.Font("Segoe UI Black", 1, 14)); // NOI18N
+        ConfigurarAuto.setText("CONFIGURAR AUTO");
+        ConfigurarAuto.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ConfigurarAutoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -200,8 +212,8 @@ public class Principal extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(0, 0, 0)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 718, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addGap(52, 52, 52)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
@@ -212,13 +224,9 @@ public class Principal extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(FrenoBrusco)
                                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnCerrar)
-                        .addGap(145, 145, 145))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                                 .addGap(10, 10, 10)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel1Layout.createSequentialGroup()
@@ -232,7 +240,12 @@ public class Principal extends javax.swing.JFrame {
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(Acelerador, javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)))
-                            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                .addGap(18, 18, 18)
+                                .addComponent(ConfigurarAuto)
+                                .addGap(44, 44, 44)
+                                .addComponent(btnCerrar)))
                         .addContainerGap())))
         );
         jPanel1Layout.setVerticalGroup(
@@ -262,7 +275,9 @@ public class Principal extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btnCerrar)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnCerrar)
+                    .addComponent(ConfigurarAuto))
                 .addContainerGap(12, Short.MAX_VALUE))
             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
         );
@@ -272,16 +287,16 @@ public class Principal extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
+                .addGap(0, 0, 0)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 1096, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(0, 0, 0))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(0, 0, 0))
         );
 
         pack();
@@ -468,12 +483,19 @@ try {
      
     }//GEN-LAST:event_FrenoBruscoMouseClicked
 
+    private void ConfigurarAutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConfigurarAutoActionPerformed
+    ConfigurarVehiculo configDialog = new ConfigurarVehiculo(this, true);
+    configDialog.setVisible(true); // El usuario escribe la configuración y cierra el diálogo
+ 
+    }//GEN-LAST:event_ConfigurarAutoActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel Acelerador;
     private javax.swing.JLabel Apagar;
     private javax.swing.JLabel Cilindraje;
     private javax.swing.JLabel Cilindraje1;
+    private javax.swing.JButton ConfigurarAuto;
     private javax.swing.JLabel Encender;
     private javax.swing.JLabel Estado;
     private javax.swing.JLabel Freno;
