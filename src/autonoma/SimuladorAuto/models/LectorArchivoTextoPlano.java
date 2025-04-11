@@ -7,11 +7,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
- * @author jgiugtiñut
+ *Clase que implementa la interfaz {@link Lector} para leer datos desde archivos de texto plano.
+ * Esta clase permite leer archivos línea por línea y también interpretar configuraciones
+ * específicas para crear objetos del tipo {@link Vehiculo} a partir de un archivo de configuración.
+ * 
+  * @author Gilary
+ * @since 20250411
+ * @version 1.0
  */
 
 public class LectorArchivoTextoPlano implements Lector {
+    
+    /**
+     * Lee un archivo de configuración y construye un objeto {@link Vehiculo}
+     * a partir del tipo de llantas y motor especificado en el archivo.
+     * 
+     * @param ruta Ruta del archivo de configuración.
+     * @return Objeto {@code Vehiculo} creado a partir de la configuración leída.
+     * @throws IOException Si ocurre un error al leer el archivo.
+     */
 
     public Vehiculo leerConfiguracion(String ruta) throws IOException {
     List<String> lineas = Files.readAllLines(Paths.get(ruta));
@@ -38,6 +52,13 @@ public class LectorArchivoTextoPlano implements Lector {
     return new Vehiculo(motor, llanta);
 }
 
+    /**
+     * Lee todas las líneas de un archivo de texto plano.
+     * 
+     * @param ruta Ruta del archivo que se desea leer.
+     * @return Lista de líneas de texto contenidas en el archivo.
+     * @throws IOException Si ocurre un error al acceder o leer el archivo.
+     */
     @Override
     public ArrayList<String> leer(String ruta) throws IOException {
         List<String> lineas = Files.readAllLines(Paths.get(ruta));
