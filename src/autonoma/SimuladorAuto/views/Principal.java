@@ -11,6 +11,7 @@ import autonoma.SimuladorAuto.models.Lector;
 import autonoma.SimuladorAuto.models.LectorArchivoTextoPlano;
 import autonoma.SimuladorAuto.models.Simulador;
 import autonoma.SimuladorAuto.models.Vehiculo;
+import autonoma.SimuladorAuto.sounds.ReproductorAudio;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -23,6 +24,7 @@ import javax.swing.JOptionPane;
  */
 public class Principal extends javax.swing.JFrame {
     private Simulador simulador;
+    ReproductorAudio reproducirSonido;
 
     /**
      * Creates new form Principal
@@ -39,6 +41,7 @@ public class Principal extends javax.swing.JFrame {
         } catch (IOException | IllegalArgumentException ex) {
         JOptionPane.showMessageDialog(this, "Error al cargar configuración: " + ex.getMessage());
         }
+        
     }
 
     /**
@@ -307,6 +310,7 @@ public class Principal extends javax.swing.JFrame {
 
        // ABRIR EL JDialog CarroEncendido
        CarroEncendido dialogo = new CarroEncendido(this, true);
+       ReproductorAudio.ReproductorAudio("src/autonoma/SimuladorAuto/sounds/SonidoEncendido.wav");
        dialogo.setVisible(true);
 
     JOptionPane.showMessageDialog(this, "Vehículo encendido.", "Información", JOptionPane.INFORMATION_MESSAGE);
@@ -318,7 +322,8 @@ public class Principal extends javax.swing.JFrame {
     private void ApagarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ApagarMouseClicked
     try {
         simulador.apagarVehiculo();
-
+        CarroApagado gifApagado = new CarroApagado(this, true);
+        gifApagado.setVisible(true);
         Estado.setText("Apagado");
         Estado.setForeground(Color.RED);
         Velocidad.setText("0 km/h");
@@ -370,6 +375,7 @@ public class Principal extends javax.swing.JFrame {
 
             // Mostrar animación de aceleración
             AcelerarCarro gif = new AcelerarCarro(this, true);
+            ReproductorAudio.ReproductorAudio("src/autonoma/SimuladorAuto/sounds/Acelerar.wav");
             gif.setVisible(true);
 
             // Actualizar interfaz
@@ -394,32 +400,32 @@ public class Principal extends javax.swing.JFrame {
             simulador.acelerarVehiculo(0);
         }
 
-    } catch (VelocidadExcedidaException e) {
+        } catch (VelocidadExcedidaException e) {
         JOptionPane.showMessageDialog(this, e.getMessage(), 
             "Advertencia: Velocidad excedida", 
             JOptionPane.WARNING_MESSAGE);
 
-    } catch (VehiculoApagadoException ex) {
+        } catch (VehiculoApagadoException ex) {
         JOptionPane.showMessageDialog(this, ex.getMessage(), 
             "Error: Vehículo apagado", 
             JOptionPane.ERROR_MESSAGE);
 
-    } catch (AccidenteException ae) {
-        // Mostrar animación del accidente
-        AccidenteCarro gifAccidente = new AccidenteCarro(this, true);
-        gifAccidente.setVisible(true);
+        } catch (AccidenteException ae) {
+            // Mostrar animación del accidente
+           AccidenteCarro gifAccidente = new AccidenteCarro(this, true);
+            gifAccidente.setVisible(true);
 
-        // Mostrar mensaje de accidente
-        JOptionPane.showMessageDialog(this, ae.getMessage(), 
+            // Mostrar mensaje de accidente
+            JOptionPane.showMessageDialog(this, ae.getMessage(), 
             "¡Accidente!", 
             JOptionPane.ERROR_MESSAGE);
 
-        // Actualizar interfaz
-        Estado.setText("Apagado");
-        Estado.setForeground(Color.RED);
-        Velocidad.setText("0 km/h");
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, 
+            // Actualizar interfaz
+            Estado.setText("Apagado");
+            Estado.setForeground(Color.RED);
+            Velocidad.setText("0 km/h");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, 
             "Por favor, ingrese un número válido.", 
             "Entrada inválida", 
             JOptionPane.WARNING_MESSAGE);
@@ -453,6 +459,7 @@ try {
 
         // Mostrar JDialog de frenado normal
         Freno freno = new Freno(this, true);
+        ReproductorAudio.ReproductorAudio("src/autonoma/SimuladorAuto/sounds/Freno.wav");
         freno.setVisible(true);
     } else {
         // Este else es opcional si prefieres validar aquí en vez de lanzar excepción
@@ -485,6 +492,7 @@ try {
     // Verificar si había velocidad antes de frenar
     if (velocidadAntes > 0) {
         FrenadoBrusco freno = new FrenadoBrusco(this, true);
+        ReproductorAudio.ReproductorAudio("src/autonoma/SimuladorAuto/sounds/Derrape.wav");
         freno.setVisible(true);
 
         JOptionPane.showMessageDialog(this, "¡El vehículo frenó bruscamente y patinó!", "Aviso de Patinaje", JOptionPane.WARNING_MESSAGE);
@@ -492,13 +500,13 @@ try {
         JOptionPane.showMessageDialog(this, "El vehículo ya estaba detenido. Solo se ha aplicado el frenado normal.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
     }
 
-} catch (NumberFormatException e) {
+    } catch (NumberFormatException e) {
     JOptionPane.showMessageDialog(this, "Por favor, ingrese un valor numérico válido.", "Error de entrada", JOptionPane.ERROR_MESSAGE);
-} catch (VehiculoApagadoException e) {
+    } catch (VehiculoApagadoException e) {
     JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-} catch (FrenadoBruscoException e) {
+    } catch (FrenadoBruscoException e) {
     JOptionPane.showMessageDialog(this, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-}
+    }
 
      
     }//GEN-LAST:event_FrenoBruscoMouseClicked
