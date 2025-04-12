@@ -1,2 +1,2 @@
-llantas 100
-motor 100
+llantas ee
+motor ee
