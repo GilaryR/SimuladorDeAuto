@@ -6,8 +6,6 @@ import autonoma.SimuladorAuto.exception.FrenadoBruscoException;
 import autonoma.SimuladorAuto.exception.VehiculoApagadoException;
 import autonoma.SimuladorAuto.exception.VehiculoEncendidoException;
 import autonoma.SimuladorAuto.exception.VelocidadExcedidaException;
-import autonoma.SimuladorAuto.models.ConfiguracionDelVehiculo;
-import autonoma.SimuladorAuto.models.Lector;
 import autonoma.SimuladorAuto.models.LectorArchivoTextoPlano;
 import autonoma.SimuladorAuto.models.Simulador;
 import autonoma.SimuladorAuto.models.Vehiculo;
@@ -15,7 +13,9 @@ import autonoma.SimuladorAuto.sounds.ReproductorAudio;
 
 import java.awt.Color;
 import java.io.IOException;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
 
 /**
  * @author Gilary
@@ -320,158 +320,203 @@ public class Principal extends javax.swing.JFrame {
     }//GEN-LAST:event_EncenderMouseClicked
 
     private void ApagarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ApagarMouseClicked
-    try {
-        simulador.apagarVehiculo();
-        CarroApagado gifApagado = new CarroApagado(this, true);
-        gifApagado.setVisible(true);
-        Estado.setText("Apagado");
-        Estado.setForeground(Color.RED);
-        Velocidad.setText("0 km/h");
+try {
+    simulador.apagarVehiculo();
 
-    } catch (AccidenteException ex) {
-        // Mostrar el gif del accidente antes del mensaje
-        AccidenteCarro gifAccidente = new AccidenteCarro(this, true);
-        gifAccidente.setVisible(true);
+    // Reproducir sonido antes de mostrar el GIF
+    ReproductorAudio.ReproductorAudio("src/autonoma/SimuladorAuto/sounds/Apagar.wav");
 
-        JOptionPane.showMessageDialog(this,
-            ex.getMessage(),
-            "¡Accidente!",
-            JOptionPane.ERROR_MESSAGE);
+    // Mostrar GIF de apagado
+    CarroApagado gifApagado = new CarroApagado(this, true);
+    gifApagado.setVisible(true);
 
-        // También apagamos visualmente el auto
-        Estado.setText("Apagado");
-        Estado.setForeground(Color.RED);
-        Velocidad.setText("0 km/h");
+    Estado.setText("Apagado");
+    Estado.setForeground(Color.RED);
+    Velocidad.setText("0 km/h");
 
-    } catch (VehiculoApagadoException ex) {
-        JOptionPane.showMessageDialog(this,
-            ex.getMessage(),
-            "Error: Vehículo apagado",
-            JOptionPane.WARNING_MESSAGE);
-    }
+} catch (AccidenteException ex) {
+    // Reproducir sonido antes del GIF del accidente
+    ReproductorAudio.ReproductorAudio("src/autonoma/SimuladorAuto/sounds/Accidente.wav");
+
+    // Mostrar el GIF del accidente
+    AccidenteCarro gifAccidente = new AccidenteCarro(this, true);
+    gifAccidente.setVisible(true);
+
+    JOptionPane.showMessageDialog(this,
+        ex.getMessage(),
+        "¡Accidente!",
+        JOptionPane.ERROR_MESSAGE);
+
+    Estado.setText("Apagado");
+    Estado.setForeground(Color.RED);
+    Velocidad.setText("0 km/h");
+
+} catch (VehiculoApagadoException ex) {
+    JOptionPane.showMessageDialog(this,
+        ex.getMessage(),
+        "Error: Vehículo apagado",
+        JOptionPane.WARNING_MESSAGE);
+}
     }//GEN-LAST:event_ApagarMouseClicked
 
     private void AceleradorMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_AceleradorMouseClicked
-    try {
-        if (this.simulador.getVehiculo().isEncendido()) {
-            // Solicitar velocidad al usuario
-            String input = JOptionPane.showInputDialog(this, 
-                "Por favor, ingrese la velocidad del vehículo:", 
-                "Entrada de Velocidad", 
-                JOptionPane.QUESTION_MESSAGE);
+try {
+    if (this.simulador.getVehiculo().isEncendido()) {
+        String input = JOptionPane.showInputDialog(this, 
+            "Por favor, ingrese la velocidad del vehículo:", 
+            "Entrada de Velocidad", 
+            JOptionPane.QUESTION_MESSAGE);
 
-            if (input == null || input.isBlank()) return;
+        if (input == null || input.isBlank()) return;
 
-            int velocidad = Integer.parseInt(input.trim());
+        int velocidad = Integer.parseInt(input.trim());
+        int velocidadMaxima = (int) simulador.getVehiculo().getMotor().getVelocidadMaxima();
 
-            // Obtener velocidad máxima
-            int velocidadMaxima = (int) simulador.getVehiculo().getMotor().getVelocidadMaxima();
-
-            if (velocidad > velocidadMaxima) {
-                throw new AccidenteException("¡Se sobrepasó la velocidad máxima del motor! El vehículo se ha accidentado.");
-            }
-
-            simulador.acelerarVehiculo(velocidad);
-
-            // Mostrar animación de aceleración
-            AcelerarCarro gif = new AcelerarCarro(this, true);
-            ReproductorAudio.ReproductorAudio("src/autonoma/SimuladorAuto/sounds/Acelerar.wav");
-            gif.setVisible(true);
-
-            // Actualizar interfaz
-            Velocidad.setText(simulador.getVelocidadVehiculo() + " km/h");
-            Estado.setText("Encendido");
-            Estado.setForeground(Color.GREEN);
-            Cilindraje.setText(simulador.getVehiculo().getLlantas().getLimitePatinaje() + " km/h");
-            Cilindraje1.setText(velocidadMaxima + " km/h");
-
-            JOptionPane.showMessageDialog(this, 
-                "Vehículo acelerado. Velocidad actual: " + simulador.getVelocidadVehiculo() + " km/h.", 
-                "Velocidad actual", 
-                JOptionPane.INFORMATION_MESSAGE);
-
-        } else {
-            int velocidadActual = (int) simulador.getVelocidadVehiculo();
-
-            if (velocidadActual >= 60) {
-                throw new AccidenteException("¡Se apagó el vehículo a alta velocidad! El conductor ha tenido un accidente.");
-            }
-
-            simulador.acelerarVehiculo(0);
+        if (velocidad > velocidadMaxima) {
+            throw new AccidenteException("¡Se sobrepasó la velocidad máxima del motor! El vehículo se ha accidentado.");
         }
 
-        } catch (VelocidadExcedidaException e) {
-        JOptionPane.showMessageDialog(this, e.getMessage(), 
-            "Advertencia: Velocidad excedida", 
-            JOptionPane.WARNING_MESSAGE);
+        simulador.acelerarVehiculo(velocidad);
 
-        } catch (VehiculoApagadoException ex) {
-        JOptionPane.showMessageDialog(this, ex.getMessage(), 
-            "Error: Vehículo apagado", 
-            JOptionPane.ERROR_MESSAGE);
+        // Reproducir sonido antes de mostrar el GIF (sin hilos)
+        ReproductorAudio.ReproductorAudio("src/autonoma/SimuladorAuto/sounds/Acelerar.wav");
 
-        } catch (AccidenteException ae) {
-            // Mostrar animación del accidente
-           AccidenteCarro gifAccidente = new AccidenteCarro(this, true);
-            gifAccidente.setVisible(true);
+        // Mostrar animación de aceleración
+        AcelerarCarro gif = new AcelerarCarro(this, true);
+        gif.setVisible(true);
 
-            // Mostrar mensaje de accidente
-            JOptionPane.showMessageDialog(this, ae.getMessage(), 
-            "¡Accidente!", 
-            JOptionPane.ERROR_MESSAGE);
+        Velocidad.setText(simulador.getVelocidadVehiculo() + " km/h");
+        Estado.setText("Encendido");
+        Estado.setForeground(Color.GREEN);
+        Cilindraje.setText(simulador.getVehiculo().getLlantas().getLimitePatinaje() + " km/h");
+        Cilindraje1.setText(velocidadMaxima + " km/h");
 
-            // Actualizar interfaz
-            Estado.setText("Apagado");
-            Estado.setForeground(Color.RED);
-            Velocidad.setText("0 km/h");
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, 
-            "Por favor, ingrese un número válido.", 
-            "Entrada inválida", 
-            JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(this, 
+            "Vehículo acelerado. Velocidad actual: " + simulador.getVelocidadVehiculo() + " km/h.", 
+            "Velocidad actual", 
+            JOptionPane.INFORMATION_MESSAGE);
+
+    } else {
+        int velocidadActual = (int) simulador.getVelocidadVehiculo();
+
+        if (velocidadActual >= 60) {
+            throw new AccidenteException("¡Se apagó el vehículo a alta velocidad! El conductor ha tenido un accidente.");
+        }
+
+        simulador.acelerarVehiculo(0);
     }
+
+} catch (VelocidadExcedidaException e) {
+    JOptionPane.showMessageDialog(this, e.getMessage(), 
+        "Advertencia: Velocidad excedida", 
+        JOptionPane.WARNING_MESSAGE);
+
+} catch (VehiculoApagadoException ex) {
+    JOptionPane.showMessageDialog(this, ex.getMessage(), 
+        "Error: Vehículo apagado", 
+        JOptionPane.ERROR_MESSAGE);
+
+} catch (AccidenteException ae) {
+    String mensaje = ae.getMessage();
+
+    // Reproducir sonido antes de mostrar el GIF
+    ReproductorAudio.ReproductorAudio("src/autonoma/SimuladorAuto/sounds/Accidente.wav");
+
+    // Mostrar animación del accidente
+    AccidenteCarro gifAccidente = new AccidenteCarro(this, true);
+    gifAccidente.setVisible(true);
+
+    JOptionPane.showMessageDialog(this, mensaje, 
+        "¡Accidente!", 
+        JOptionPane.ERROR_MESSAGE);
+
+    Estado.setText("Apagado");
+    Estado.setForeground(Color.RED);
+    Velocidad.setText("0 km/h");
+
+} catch (NumberFormatException e) {
+    JOptionPane.showMessageDialog(this, 
+        "Por favor, ingrese un número válido.", 
+        "Entrada inválida", 
+        JOptionPane.WARNING_MESSAGE);
+}
+
     }//GEN-LAST:event_AceleradorMouseClicked
 
     private void FrenoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FrenoMouseClicked
 try {
     if (this.simulador.getVehiculo().isEncendido()) {
-        // Solicitar la velocidad al usuario
-        String input = JOptionPane.showInputDialog(this, "Por favor, ingrese la velocidad de frenado:", "Entrada de Velocidad", JOptionPane.QUESTION_MESSAGE);
+        String input = JOptionPane.showInputDialog(this, 
+            "Por favor, ingrese la velocidad del vehículo:", 
+            "Entrada de Velocidad", 
+            JOptionPane.QUESTION_MESSAGE);
 
-        // Validar que se ingresó algo
-        if (input == null || input.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "No se ingresó velocidad.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            return;
+        if (input == null || input.isBlank()) return;
+
+        int velocidad = Integer.parseInt(input.trim());
+        int velocidadMaxima = (int) simulador.getVehiculo().getMotor().getVelocidadMaxima();
+
+        if (velocidad > velocidadMaxima) {
+            throw new AccidenteException("¡Se sobrepasó la velocidad máxima del motor! El vehículo se ha accidentado.");
         }
 
-        // Convertir el valor ingresado a número
-        int velocidad = Integer.parseInt(input);
+        simulador.acelerarVehiculo(velocidad);
 
-        // Llamar al método frenar
-        simulador.frenarVehiculo(velocidad);
+        // Mostrar gif y sonido en paralelo usando JDialog no modal
+        JDialog gifDialog = new AcelerarCarro(this, false); // ¡no modal!
+        gifDialog.setVisible(true); // no bloquea
+        gifDialog.setLocationRelativeTo(this);
+
+        // Reproducir el sonido
+        new Thread(() -> {
+            ReproductorAudio.ReproductorAudio("src/autonoma/SimuladorAuto/sounds/Acelerar.wav");
+        }).start();
+
+        // Cerrar el gif automáticamente después de X segundos (por ejemplo, 3)
+        new Timer(3000, e -> gifDialog.dispose()).start();
 
         // Actualizar interfaz
         Velocidad.setText(simulador.getVelocidadVehiculo() + " km/h");
         Estado.setText("Encendido");
         Estado.setForeground(Color.GREEN);
         Cilindraje.setText(simulador.getVehiculo().getLlantas().getLimitePatinaje() + " km/h");
-        Cilindraje1.setText(simulador.getVehiculo().getMotor().getVelocidadMaxima() + " km/h");
+        Cilindraje1.setText(velocidadMaxima + " km/h");
 
-        // Mostrar JDialog de frenado normal
-        Freno freno = new Freno(this, true);
-        ReproductorAudio.ReproductorAudio("src/autonoma/SimuladorAuto/sounds/Freno.wav");
-        freno.setVisible(true);
+        JOptionPane.showMessageDialog(this, 
+            "Vehículo acelerado. Velocidad actual: " + simulador.getVelocidadVehiculo() + " km/h.", 
+            "Velocidad actual", 
+            JOptionPane.INFORMATION_MESSAGE);
+
     } else {
-        // Este else es opcional si prefieres validar aquí en vez de lanzar excepción
-        throw new VehiculoApagadoException("El vehículo está apagado. El carro está quieto y no necesita frenar.");
+        int velocidadActual = (int) simulador.getVelocidadVehiculo();
+
+        if (velocidadActual >= 60) {
+            throw new AccidenteException("¡Se apagó el vehículo a alta velocidad! El conductor ha tenido un accidente.");
+        }
+
+        simulador.acelerarVehiculo(0);
     }
 
-} catch (NumberFormatException e) {
-    JOptionPane.showMessageDialog(this, "Por favor, ingrese un valor numérico válido.", "Error de entrada", JOptionPane.ERROR_MESSAGE);
-} catch (VehiculoApagadoException e) {
-    JOptionPane.showMessageDialog(this, e.getMessage(), "Vehículo Apagado", JOptionPane.WARNING_MESSAGE);
-}
+} catch (VelocidadExcedidaException e) {
+    JOptionPane.showMessageDialog(this, e.getMessage(), 
+        "Advertencia: Velocidad excedida", 
+        JOptionPane.WARNING_MESSAGE);
 
+} catch (VehiculoApagadoException ex) {
+    JOptionPane.showMessageDialog(this, ex.getMessage(), 
+        "Error: Vehículo apagado", 
+        JOptionPane.ERROR_MESSAGE);
+
+} catch (AccidenteException ae) {
+    String mensaje = ae.getMessage();
+
+    // Mostrar gif del accidente (no modal)
+    JDialog gifAccidente = new AccidenteCarro(this, false); // no modal
+    gifAccidente.setVisible(true);
+    gifAccidente.setLocationRelativeTo(this);
+
+    // Sonido en paralelo
+}
     }//GEN-LAST:event_FrenoMouseClicked
 
     private void FrenoBruscoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FrenoBruscoMouseClicked

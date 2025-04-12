@@ -1,2 +1,2 @@
-llantas Buenas
-motor 2000
+llantas S
+motor S
