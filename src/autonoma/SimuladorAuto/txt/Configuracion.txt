@@ -1,2 +1,2 @@
-llantas ee
-motor ee
+llantas Buenas
+motor 2000

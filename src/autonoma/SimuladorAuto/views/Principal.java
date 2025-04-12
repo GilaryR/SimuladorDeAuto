@@ -444,7 +444,7 @@ try {
     }//GEN-LAST:event_AceleradorMouseClicked
 
     private void FrenoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FrenoMouseClicked
-try {
+    try {
         if (this.simulador.getVehiculo().isEncendido()) {
         // Solicitar la velocidad al usuario
         String input = JOptionPane.showInputDialog(this, "Por favor, ingrese la velocidad de frenado:", "Entrada de Velocidad", JOptionPane.QUESTION_MESSAGE);
@@ -472,43 +472,43 @@ try {
         Freno freno = new Freno(this, true);
         ReproductorAudio.ReproductorAudio("src/autonoma/SimuladorAuto/sounds/Freno.wav");
         freno.setVisible(true);
-    } else {
+        } else {
         // Este else es opcional si prefieres validar aquí en vez de lanzar excepción
         throw new VehiculoApagadoException("El vehículo está apagado. El carro está quieto y no necesita frenar.");
-    }
+        }
 
-} catch (NumberFormatException e) {
+    } catch (NumberFormatException e) {
     JOptionPane.showMessageDialog(this, "Por favor, ingrese un valor numérico válido.", "Error de entrada", JOptionPane.ERROR_MESSAGE);
-} catch (VehiculoApagadoException e) {
+    } catch (VehiculoApagadoException e) {
     JOptionPane.showMessageDialog(this, e.getMessage(), "Vehículo Apagado", JOptionPane.WARNING_MESSAGE);
-}
+    }
     }//GEN-LAST:event_FrenoMouseClicked
 
     private void FrenoBruscoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_FrenoBruscoMouseClicked
-try {
-    // Guardar velocidad antes de frenar
-    int velocidadAntes = (int) simulador.getVelocidadVehiculo();
+    try {
+        // Guardar velocidad antes de frenar
+        int velocidadAntes = (int) simulador.getVelocidadVehiculo();
 
-    // Frenar el vehículo
-    simulador.frenarBruscamenteVehiculo();
+        // Frenar el vehículo
+        simulador.frenarBruscamenteVehiculo();
 
-    // Actualizar interfaz
-    Velocidad.setText(simulador.getVelocidadVehiculo() + " km/h");
-    Estado.setText("Encendido");
-    Estado.setForeground(Color.GREEN);
-    Cilindraje.setText(simulador.getVehiculo().getLlantas().getLimitePatinaje() + " km/h");
-    Cilindraje1.setText(simulador.getVehiculo().getMotor().getVelocidadMaxima() + " km/h");
+        // Actualizar interfaz
+        Velocidad.setText(simulador.getVelocidadVehiculo() + " km/h");
+        Estado.setText("Encendido");
+        Estado.setForeground(Color.GREEN);
+        Cilindraje.setText(simulador.getVehiculo().getLlantas().getLimitePatinaje() + " km/h");
+        Cilindraje1.setText(simulador.getVehiculo().getMotor().getVelocidadMaxima() + " km/h");
 
-    // Verificar si había velocidad antes de frenar
-    if (velocidadAntes > 0) {
+        // Verificar si había velocidad antes de frenar
+        if (velocidadAntes > 0) {
         FrenadoBrusco freno = new FrenadoBrusco(this, true);
         ReproductorAudio.ReproductorAudio("src/autonoma/SimuladorAuto/sounds/Derrape.wav");
         freno.setVisible(true);
 
         JOptionPane.showMessageDialog(this, "¡El vehículo frenó bruscamente y patinó!", "Aviso de Patinaje", JOptionPane.WARNING_MESSAGE);
-    } else {
+        } else {
         JOptionPane.showMessageDialog(this, "El vehículo ya estaba detenido. Solo se ha aplicado el frenado normal.", "Aviso", JOptionPane.INFORMATION_MESSAGE);
-    }
+        }
 
     } catch (NumberFormatException e) {
     JOptionPane.showMessageDialog(this, "Por favor, ingrese un valor numérico válido.", "Error de entrada", JOptionPane.ERROR_MESSAGE);
